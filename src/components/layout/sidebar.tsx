@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -15,7 +16,12 @@ const NAV_ITEMS = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { subscribedTypes } = useUserTrackers();
+  const { subscribedTypes, refetch } = useUserTrackers();
+
+  // Refetch subscriptions when navigating between pages
+  useEffect(() => {
+    refetch();
+  }, [pathname, refetch]);
 
   return (
     <aside className="hidden md:flex flex-col w-64 border-r bg-card h-screen sticky top-0">

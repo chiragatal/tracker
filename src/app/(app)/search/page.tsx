@@ -100,7 +100,14 @@ export default function SearchPage() {
         <div className="flex gap-3">
           <Select value={tracker} onValueChange={(v) => setTracker(v ?? "")}>
             <SelectTrigger>
-              <SelectValue placeholder="All trackers" />
+              <SelectValue placeholder="All trackers">
+                {tracker && tracker !== "all"
+                  ? (() => {
+                      const t = trackerTypes.find((tt) => tt.id === tracker);
+                      return t ? <span>{t.icon} {t.name}</span> : undefined;
+                    })()
+                  : undefined}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All trackers</SelectItem>

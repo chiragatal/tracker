@@ -94,9 +94,19 @@ export default function NewEntryPage() {
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
         <div className="space-y-2">
           <Label>Tracker</Label>
-          <Select value={trackerTypeId} onValueChange={(v) => setTrackerTypeId(v ?? "")}>
+          <Select
+            value={trackerTypeId}
+            onValueChange={(v) => {
+              setTrackerTypeId(v ?? "");
+              setData({});
+            }}
+          >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a tracker..." />
+              <SelectValue placeholder="Select a tracker...">
+                {selectedTracker ? (
+                  <span>{selectedTracker.icon} {selectedTracker.name}</span>
+                ) : undefined}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {subscribedTypes.map((t) => (
