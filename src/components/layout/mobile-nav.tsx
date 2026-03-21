@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, Compass, Plus, Search } from "lucide-react";
+import { Home, Compass, Plus, Search, Tag } from "lucide-react";
 
 const ITEMS = [
   { href: "/dashboard", label: "Home", icon: Home },
   { href: "/discover", label: "Discover", icon: Compass },
   { href: "/new", label: "Add", icon: Plus },
   { href: "/search", label: "Search", icon: Search },
+  { href: "/tags", label: "Tags", icon: Tag },
 ];
 
 export function MobileNav() {

@@ -106,19 +106,19 @@ export default function TrackerEntriesPage() {
         title={`${trackerType.icon} ${trackerType.name}`}
         description={trackerType.description}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button variant="outline" onClick={exportEntries}>
-              <Download className="h-4 w-4 mr-1" /> Export
+              <Download className="h-4 w-4 mr-1" /> <span className="hidden sm:inline">Export</span>
             </Button>
             <Link
               href={`/import?tracker=${trackerType.id}`}
               className={buttonVariants({ variant: "outline" })}
             >
-              <Upload className="h-4 w-4 mr-1" /> Import
+              <Upload className="h-4 w-4 mr-1" /> <span className="hidden sm:inline">Import</span>
             </Link>
             {isCreator && (
               <Link href={`/tracker/${slug}/edit`} className={buttonVariants({ variant: "outline" })}>
-                <Pencil className="h-4 w-4 mr-1" /> Edit Tracker
+                <Pencil className="h-4 w-4 mr-1" /> <span className="hidden sm:inline">Edit Tracker</span>
               </Link>
             )}
             <Link href="/new" className={buttonVariants()}>
@@ -129,7 +129,7 @@ export default function TrackerEntriesPage() {
       />
 
       <Tabs defaultValue="done">
-        <div className="flex items-center justify-between gap-4 mb-2">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-2">
           <TabsList>
             <TabsTrigger value="done">
               Done ({doneEntries.length})

@@ -21,8 +21,8 @@ export function SearchBar({ className }: { className?: string }) {
   );
 
   return (
-    <form onSubmit={handleSubmit} className={className}>
-      <div className="relative">
+    <form onSubmit={handleSubmit} className={`w-full ${className ?? ""}`}>
+      <div className="relative w-full">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           value={query}

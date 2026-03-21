@@ -39,6 +39,11 @@ export default function RootLayout({
             document.documentElement.classList.add('dark');
           })();
         `}} />
+        <script dangerouslySetInnerHTML={{ __html: `
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+          }
+        `}} />
       </head>
       <body className="min-h-full flex flex-col font-sans">
         {children}
