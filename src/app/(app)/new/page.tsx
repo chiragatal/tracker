@@ -32,6 +32,9 @@ export default function NewEntryPage() {
   const [trackerTypeId, setTrackerTypeId] = useState("");
   const [title, setTitle] = useState("");
   const [status, setStatus] = useState<EntryStatus>("done");
+  const [entryDate, setEntryDate] = useState(
+    () => new Date().toISOString().split("T")[0]
+  );
   const [data, setData] = useState<Record<string, unknown>>({});
   const [images, setImages] = useState<EntryImage[]>([]);
   const [notes, setNotes] = useState("");
@@ -53,7 +56,7 @@ export default function NewEntryPage() {
           tracker_type_id: trackerTypeId,
           title: title.trim(),
           status,
-          data,
+          data: { ...data, entry_date: entryDate },
           notes: notes.trim() || null,
         },
         images.length > 0 ? images : undefined
@@ -144,6 +147,16 @@ export default function NewEntryPage() {
               <SelectItem value="want_to">Want to</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="entry-date">Date</Label>
+          <Input
+            id="entry-date"
+            type="date"
+            value={entryDate}
+            onChange={(e) => setEntryDate(e.target.value)}
+          />
         </div>
 
         {selectedTracker && selectedTracker.fields.length > 0 && (

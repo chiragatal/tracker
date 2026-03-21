@@ -15,6 +15,13 @@ export const metadata: Metadata = {
     icon: "/favicon.svg",
     apple: "/favicon.svg",
   },
+  manifest: "/manifest.json",
+  themeColor: "#10B981",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Tracker",
+  },
 };
 
 export default function RootLayout({

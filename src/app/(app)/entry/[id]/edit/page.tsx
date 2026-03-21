@@ -33,6 +33,9 @@ export default function EditEntryPage() {
 
   const [title, setTitle] = useState("");
   const [status, setStatus] = useState<EntryStatus>("done");
+  const [entryDate, setEntryDate] = useState(
+    () => new Date().toISOString().split("T")[0]
+  );
   const [data, setData] = useState<Record<string, unknown>>({});
   const [images, setImages] = useState<EntryImage[]>([]);
   const [notes, setNotes] = useState("");
@@ -43,6 +46,10 @@ export default function EditEntryPage() {
     if (entry) {
       setTitle(entry.title);
       setStatus(markDone ? "done" : entry.status);
+      setEntryDate(
+        (entry.data?.entry_date as string) ??
+          new Date().toISOString().split("T")[0]
+      );
       setData(entry.data ?? {});
       setImages(entry.images ?? []);
       setNotes(entry.notes ?? "");
@@ -60,7 +67,7 @@ export default function EditEntryPage() {
         {
           title: title.trim(),
           status,
-          data,
+          data: { ...data, entry_date: entryDate },
           notes: notes.trim() || null,
         },
         images
@@ -118,6 +125,16 @@ export default function EditEntryPage() {
               <SelectItem value="want_to">Want to</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="entry-date">Date</Label>
+          <Input
+            id="entry-date"
+            type="date"
+            value={entryDate}
+            onChange={(e) => setEntryDate(e.target.value)}
+          />
         </div>
 
         {fields.length > 0 && (

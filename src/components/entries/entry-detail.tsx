@@ -31,7 +31,7 @@ export function EntryDetail({ entry }: EntryDetailProps) {
                 </span>
               )}
               <span className="text-sm text-muted-foreground">
-                {formatDate(entry.created_at)}
+                {formatDate((entry.data?.entry_date as string) ?? entry.created_at)}
               </span>
             </div>
           </div>

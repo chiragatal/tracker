@@ -53,6 +53,7 @@ export interface Entry {
   status: EntryStatus;
   data: Record<string, unknown>;
   notes: string | null;
+  is_public?: boolean;
   created_at: string;
   updated_at: string;
   tracker_type?: TrackerType; // joined

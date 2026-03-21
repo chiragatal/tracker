@@ -58,6 +58,10 @@ export function Topbar() {
                 <p className="text-sm font-medium truncate">{email}</p>
               </div>
             )}
+            <DropdownMenuItem onClick={() => router.push("/profile")} className="cursor-pointer">
+              <User className="h-4 w-4 mr-2" />
+              Profile
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive focus:text-destructive">
               <LogOut className="h-4 w-4 mr-2" />
               Sign out
