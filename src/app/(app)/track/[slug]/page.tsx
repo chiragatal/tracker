@@ -10,6 +10,7 @@ import { EntryList } from "@/components/entries/entry-list";
 import { CardGridSkeleton } from "@/components/shared/loading-skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { buttonVariants } from "@/components/ui/button";
+import { Pencil } from "lucide-react";
 
 export default function TrackerEntriesPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -47,9 +48,14 @@ export default function TrackerEntriesPage() {
         title={`${trackerType.icon} ${trackerType.name}`}
         description={trackerType.description}
         actions={
-          <Link href="/new" className={buttonVariants()}>
-            Add Entry
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href={`/tracker/${slug}/edit`} className={buttonVariants({ variant: "outline" })}>
+              <Pencil className="h-4 w-4 mr-1" /> Edit Tracker
+            </Link>
+            <Link href="/new" className={buttonVariants()}>
+              Add Entry
+            </Link>
+          </div>
         }
       />
 

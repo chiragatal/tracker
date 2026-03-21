@@ -20,6 +20,8 @@ import { FIELD_TYPES, type FieldDefinition, type FieldType } from "@/types/track
 interface FormBuilderProps {
   fields: FieldDefinition[];
   onChange: (fields: FieldDefinition[]) => void;
+  /** Number of original fields that are locked (have existing entries). These can be renamed but not deleted or type-changed. */
+  lockedFieldCount?: number;
 }
 
 const FIELD_TYPE_LABELS: Record<FieldType, string> = {
@@ -102,7 +104,7 @@ function DropdownOptionsEditor({
   );
 }
 
-export function FormBuilder({ fields, onChange }: FormBuilderProps) {
+export function FormBuilder({ fields, onChange, lockedFieldCount = 0 }: FormBuilderProps) {
   const addField = useCallback(() => {
     const newField: FieldDefinition = {
       key: `field_${Date.now()}`,
@@ -160,7 +162,9 @@ export function FormBuilder({ fields, onChange }: FormBuilderProps) {
 
   return (
     <div className="space-y-4">
-      {fields.map((field, index) => (
+      {fields.map((field, index) => {
+        const isLocked = index < lockedFieldCount;
+        return (
         <Card key={index} className="p-4">
           <div className="flex items-start gap-3">
             <div className="flex flex-col gap-1 pt-1">
@@ -197,23 +201,29 @@ export function FormBuilder({ fields, onChange }: FormBuilderProps) {
                 </div>
                 <div className="w-40">
                   <Label className="text-xs text-muted-foreground">Type</Label>
-                  <Select
-                    value={field.type}
-                    onValueChange={(val) =>
-                      updateField(index, { type: val as FieldType })
-                    }
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {FIELD_TYPES.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {FIELD_TYPE_LABELS[type]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {isLocked ? (
+                    <div className="h-8 flex items-center px-2 text-sm text-muted-foreground bg-muted/50 rounded-md">
+                      {FIELD_TYPE_LABELS[field.type]}
+                    </div>
+                  ) : (
+                    <Select
+                      value={field.type}
+                      onValueChange={(val) =>
+                        updateField(index, { type: val as FieldType })
+                      }
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {FIELD_TYPES.map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {FIELD_TYPE_LABELS[type]}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
               </div>
 
@@ -238,18 +248,25 @@ export function FormBuilder({ fields, onChange }: FormBuilderProps) {
               )}
             </div>
 
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => removeField(index)}
-              className="text-muted-foreground hover:text-destructive"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            {isLocked ? (
+              <div className="w-8 h-8 flex items-center justify-center" title="Cannot delete — has entries">
+                <Trash2 className="h-4 w-4 text-muted-foreground/30" />
+              </div>
+            ) : (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => removeField(index)}
+                className="text-muted-foreground hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </Card>
-      ))}
+        );
+      })}
 
       <Button type="button" variant="outline" onClick={addField} className="w-full">
         <Plus className="h-4 w-4 mr-2" />

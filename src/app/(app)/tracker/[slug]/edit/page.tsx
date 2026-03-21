@@ -139,7 +139,11 @@ export default function EditTrackerPage() {
 
             <div className="space-y-2">
               <Label>Fields</Label>
-              <FormBuilder fields={fields} onChange={setFields} />
+              <FormBuilder
+                fields={fields}
+                onChange={setFields}
+                lockedFieldCount={hasEntries ? (trackerType?.fields.length ?? 0) : 0}
+              />
             </div>
 
             <Button type="submit" disabled={saving || !name.trim()} className="w-full">
