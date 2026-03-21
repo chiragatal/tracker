@@ -19,7 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Pencil, Download, Upload } from "lucide-react";
+import { Pencil, Download, Upload, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import type { Entry } from "@/types/tracker";
 
 type SortOption = "newest" | "oldest" | "title_az" | "title_za";
@@ -43,7 +44,7 @@ function sortEntries(entries: Entry[], sort: SortOption): Entry[] {
 export default function TrackerEntriesPage() {
   const { slug } = useParams<{ slug: string }>();
   const { trackerType, loading: typeLoading } = useTrackerType(slug);
-  const { entries, loading: entriesLoading } = useEntries({
+  const { entries, loading: entriesLoading, remove } = useEntries({
     trackerTypeId: trackerType?.id,
   });
   const supabase = useMemo(() => createClient(), []);
@@ -88,6 +89,20 @@ export default function TrackerEntriesPage() {
     URL.revokeObjectURL(url);
   };
 
+  const handleDeleteAll = async () => {
+    if (
+      !window.confirm(
+        `Delete all ${entries.length} entries for ${trackerType?.name}? This cannot be undone.`
+      )
+    )
+      return;
+    const count = entries.length;
+    for (const entry of entries) {
+      await remove(entry.id);
+    }
+    toast.success(`Deleted ${count} entries`);
+  };
+
   if (loading) {
     return <CardGridSkeleton />;
   }
@@ -107,6 +122,11 @@ export default function TrackerEntriesPage() {
         description={`${trackerType.description} \u00b7 ${entries.length} entries`}
         actions={
           <div className="flex flex-wrap items-center gap-2">
+            {entries.length > 0 && (
+              <Button variant="destructive" onClick={handleDeleteAll}>
+                <Trash2 className="h-4 w-4 mr-1" /> <span className="hidden sm:inline">Delete All</span>
+              </Button>
+            )}
             <Button variant="outline" onClick={exportEntries}>
               <Download className="h-4 w-4 mr-1" /> <span className="hidden sm:inline">Export</span>
             </Button>

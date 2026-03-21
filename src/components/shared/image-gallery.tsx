@@ -2,7 +2,7 @@
 
 import { useImageUpload } from "@/lib/hooks/use-image-upload";
 import { Button } from "@/components/ui/button";
-import { ImagePlus, Loader2, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, ImagePlus, Loader2, X } from "lucide-react";
 import Image from "next/image";
 import { useRef } from "react";
 import type { EntryImage } from "@/types/tracker";
@@ -43,10 +43,18 @@ export function ImageGallery({
     onChange?.(images.filter((img) => img.id !== id));
   };
 
+  const moveImage = (from: number, to: number) => {
+    if (!onChange) return;
+    const updated = [...images];
+    const [moved] = updated.splice(from, 1);
+    updated.splice(to, 0, moved);
+    onChange(updated.map((img, i) => ({ ...img, position: i })));
+  };
+
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {images.map((img) => (
+        {images.map((img, index) => (
           <div
             key={img.id}
             className="relative group aspect-video rounded-md overflow-hidden"
@@ -57,6 +65,24 @@ export function ImageGallery({
               fill
               className="object-cover"
             />
+            {!readOnly && index > 0 && (
+              <button
+                type="button"
+                onClick={() => moveImage(index, index - 1)}
+                className="absolute top-1 left-1 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <ChevronLeft className="h-3 w-3" />
+              </button>
+            )}
+            {!readOnly && index < images.length - 1 && (
+              <button
+                type="button"
+                onClick={() => moveImage(index, index + 1)}
+                className="absolute top-1 left-8 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <ChevronRight className="h-3 w-3" />
+              </button>
+            )}
             {!readOnly && (
               <button
                 type="button"
