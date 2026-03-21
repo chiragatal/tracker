@@ -32,11 +32,27 @@ export function useTrackerTypes() {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
+
+      let slug = slugify(input.name);
       const { data, error } = await supabase
         .from("tracker_types")
-        .insert({ ...input, slug: slugify(input.name), created_by: user.id })
+        .insert({ ...input, slug, created_by: user.id })
         .select()
         .single();
+
+      if (error?.code === "23505") {
+        // Unique violation — append random suffix
+        slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
+        const { data: retryData, error: retryError } = await supabase
+          .from("tracker_types")
+          .insert({ ...input, slug, created_by: user.id })
+          .select()
+          .single();
+        if (retryError) throw retryError;
+        setTrackerTypes((prev) => [...prev, retryData as TrackerType]);
+        return retryData as TrackerType;
+      }
+
       if (error) throw error;
       setTrackerTypes((prev) => [...prev, data as TrackerType]);
       return data as TrackerType;

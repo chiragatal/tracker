@@ -14,18 +14,14 @@ export function useImageUpload() {
     setUploading(true);
     setProgress(0);
     try {
+      const formData = new FormData();
+      formData.append("file", file);
       const res = await fetch("/api/upload", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileType: file.type }),
+        body: formData,
       });
-      if (!res.ok) throw new Error("Failed to get upload URL");
-      const { uploadUrl, publicUrl } = await res.json();
-      await fetch(uploadUrl, {
-        method: "PUT",
-        headers: { "Content-Type": file.type },
-        body: file,
-      });
+      if (!res.ok) throw new Error("Upload failed");
+      const { publicUrl } = await res.json();
       setProgress(100);
       return { publicUrl };
     } finally {

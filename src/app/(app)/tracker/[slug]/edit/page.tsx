@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CardGridSkeleton } from "@/components/shared/loading-skeleton";
 import { Loader2, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
 import type { FieldDefinition } from "@/types/tracker";
 
 export default function EditTrackerPage() {
@@ -70,9 +71,12 @@ export default function EditTrackerPage() {
         })
         .eq("id", trackerType.id);
       if (updateError) throw updateError;
+      toast.success("Tracker saved!");
       router.push(`/track/${slug}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update tracker");
+      const message = err instanceof Error ? err.message : "Failed to update tracker";
+      setError(message);
+      toast.error(message);
       setSaving(false);
     }
   };

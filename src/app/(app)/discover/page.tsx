@@ -11,6 +11,7 @@ import { CardGridSkeleton } from "@/components/shared/loading-skeleton";
 import { buttonVariants } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { Plus } from "lucide-react";
+import { toast } from "sonner";
 
 export default function DiscoverPage() {
   const { trackerTypes, loading: typesLoading } = useTrackerTypes();
@@ -28,10 +29,16 @@ export default function DiscoverPage() {
   const loading = typesLoading || userLoading;
 
   const handleToggle = async (trackerTypeId: string) => {
-    if (isSubscribed(trackerTypeId)) {
-      await unsubscribe(trackerTypeId);
-    } else {
-      await subscribe(trackerTypeId);
+    try {
+      if (isSubscribed(trackerTypeId)) {
+        await unsubscribe(trackerTypeId);
+        toast.success("Unsubscribed from tracker");
+      } else {
+        await subscribe(trackerTypeId);
+        toast.success("Subscribed to tracker");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Action failed");
     }
   };
 

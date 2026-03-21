@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import type { EntryImage, EntryStatus, TrackerType } from "@/types/tracker";
 
 export default function NewEntryPage() {
@@ -59,7 +60,9 @@ export default function NewEntryPage() {
       );
       router.push(`/entry/${entry.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create entry");
+      const message = err instanceof Error ? err.message : "Failed to create entry";
+      setError(message);
+      toast.error(message);
       setSaving(false);
     }
   };

@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import type { FieldDefinition } from "@/types/tracker";
 
 export default function NewTrackerPage() {
@@ -38,9 +39,12 @@ export default function NewTrackerPage() {
         description: description.trim(),
         fields,
       });
+      toast.success("Tracker created!");
       router.push(`/track/${tracker.slug}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create tracker");
+      const message = err instanceof Error ? err.message : "Failed to create tracker";
+      setError(message);
+      toast.error(message);
       setSaving(false);
     }
   };

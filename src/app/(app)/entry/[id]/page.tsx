@@ -7,6 +7,7 @@ import { EntryDetail } from "@/components/entries/entry-detail";
 import { CardGridSkeleton } from "@/components/shared/loading-skeleton";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Pencil, Trash2, CheckCircle, ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 
 export default function EntryDetailPage() {
   const router = useRouter();
@@ -18,8 +19,13 @@ export default function EntryDetailPage() {
   const handleDelete = async () => {
     if (!entry) return;
     if (!confirm("Are you sure you want to delete this entry?")) return;
-    await remove(entry.id);
-    router.push("/dashboard");
+    try {
+      await remove(entry.id);
+      toast.success("Entry deleted");
+      router.push("/dashboard");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete entry");
+    }
   };
 
   if (loading) return <CardGridSkeleton count={1} />;
