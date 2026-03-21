@@ -20,7 +20,7 @@ export const entrySchema = z.object({
   tracker_type_id: z.string().uuid(),
   title: z.string().min(1).max(200),
   status: z.enum(["done", "want_to"]),
-  data: z.record(z.unknown()),
+  data: z.record(z.string(), z.unknown()),
   notes: z.string().nullable().optional(),
 });
 
