@@ -104,7 +104,7 @@ export default function TrackerEntriesPage() {
     <div>
       <PageHeader
         title={`${trackerType.icon} ${trackerType.name}`}
-        description={trackerType.description}
+        description={`${trackerType.description} \u00b7 ${entries.length} entries`}
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <Button variant="outline" onClick={exportEntries}>

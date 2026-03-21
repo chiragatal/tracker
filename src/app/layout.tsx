@@ -16,7 +16,10 @@ export const metadata: Metadata = {
     apple: "/favicon.svg",
   },
   manifest: "/manifest.json",
-  themeColor: "#10B981",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0f1e" },
+  ],
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

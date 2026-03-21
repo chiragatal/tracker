@@ -1,6 +1,7 @@
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { KeyboardShortcuts } from "@/components/layout/keyboard-shortcuts";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +17,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </main>
       </div>
       <MobileNav />
+      <KeyboardShortcuts />
     </div>
   );
 }

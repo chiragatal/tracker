@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,11 +13,13 @@ import { toast } from "sonner";
 
 export default function ProfilePage() {
   const supabase = useMemo(() => createClient(), []);
+  const router = useRouter();
   const [email, setEmail] = useState<string | null>(null);
   const [createdAt, setCreatedAt] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [changingPassword, setChangingPassword] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const [totalEntries, setTotalEntries] = useState(0);
   const [entriesThisMonth, setEntriesThisMonth] = useState(0);
@@ -58,6 +61,37 @@ export default function ProfilePage() {
     }
     load();
   }, [supabase]);
+
+  const handleDeleteAccount = async () => {
+    if (
+      !window.confirm(
+        "Are you sure? This will permanently delete all your entries and data. This cannot be undone."
+      )
+    )
+      return;
+
+    setDeleting(true);
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Delete all user's entries (cascades to entry_images)
+      await supabase.from("entries").delete().eq("user_id", user.id);
+      // Delete all subscriptions
+      await supabase.from("user_trackers").delete().eq("user_id", user.id);
+      // Delete tracker types created by this user
+      await supabase.from("tracker_types").delete().eq("created_by", user.id);
+
+      toast.success("Account data deleted");
+      await supabase.auth.signOut();
+      router.push("/");
+    } catch {
+      toast.error("Failed to delete account");
+      setDeleting(false);
+    }
+  };
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -178,6 +212,29 @@ export default function ProfilePage() {
                 Update Password
               </Button>
             </form>
+          </CardContent>
+        </Card>
+
+        {/* Delete account */}
+        <Card className="border-destructive/50">
+          <CardContent className="pt-6 space-y-4">
+            <h2 className="text-lg font-semibold text-destructive">
+              Delete Account
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Permanently delete all your entries, tracker subscriptions, and
+              tracker types. This action cannot be undone.
+            </p>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteAccount}
+              disabled={deleting}
+            >
+              {deleting && (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              )}
+              Delete Account
+            </Button>
           </CardContent>
         </Card>
       </div>
