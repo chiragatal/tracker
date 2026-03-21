@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { GripVertical, Trash2, Plus, X } from "lucide-react";
+import { ChevronUp, ChevronDown, Trash2, Plus, X } from "lucide-react";
 import { slugify } from "@/lib/utils";
 import { FIELD_TYPES, type FieldDefinition, type FieldType } from "@/types/tracker";
 
@@ -167,22 +167,22 @@ export function FormBuilder({ fields, onChange, lockedFieldCount = 0 }: FormBuil
         return (
         <Card key={index} className="p-4">
           <div className="flex items-start gap-3">
-            <div className="flex flex-col gap-1 pt-1">
+            <div className="flex flex-col gap-0.5 pt-1">
               <button
                 type="button"
                 onClick={() => moveField(index, -1)}
                 disabled={index === 0}
-                className="text-muted-foreground hover:text-foreground disabled:opacity-30"
+                className="text-muted-foreground hover:text-foreground disabled:opacity-30 p-0.5 rounded hover:bg-muted"
               >
-                <GripVertical className="h-4 w-4" />
+                <ChevronUp className="h-4 w-4" />
               </button>
               <button
                 type="button"
                 onClick={() => moveField(index, 1)}
                 disabled={index === fields.length - 1}
-                className="text-muted-foreground hover:text-foreground disabled:opacity-30"
+                className="text-muted-foreground hover:text-foreground disabled:opacity-30 p-0.5 rounded hover:bg-muted"
               >
-                <GripVertical className="h-4 w-4" />
+                <ChevronDown className="h-4 w-4" />
               </button>
             </div>
 
