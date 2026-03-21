@@ -5,13 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useUserTrackers } from "@/lib/hooks/use-user-trackers";
-import { Home, Search, Compass, Plus } from "lucide-react";
+import { Home, Search, Compass, Plus, Tag } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Home", icon: Home },
   { href: "/discover", label: "Discover", icon: Compass },
   { href: "/search", label: "Search", icon: Search },
+  { href: "/tags", label: "Tags", icon: Tag },
 ];
 
 export function Sidebar() {

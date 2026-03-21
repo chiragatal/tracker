@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { LogOut, User } from "lucide-react";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 
 export function Topbar() {
   const router = useRouter();
@@ -41,6 +42,8 @@ export function Topbar() {
           <span className="text-lg font-bold text-gradient">Tracker</span>
         </div>
         <SearchBar className="hidden md:block w-full max-w-md" />
+        <div className="flex items-center gap-2">
+        <ThemeToggle />
         <DropdownMenu>
           <DropdownMenuTrigger className="rounded-full hover:bg-muted p-0.5 outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer">
             <Avatar className="h-8 w-8 bg-gradient-to-br from-emerald-600 to-teal-600">
@@ -61,6 +64,7 @@ export function Topbar() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        </div>
       </div>
     </header>
   );
