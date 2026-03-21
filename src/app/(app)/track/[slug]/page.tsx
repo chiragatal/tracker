@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { useTrackerType } from "@/lib/hooks/use-tracker-types";
 import { useEntries } from "@/lib/hooks/use-entries";
+import { createClient } from "@/lib/supabase/client";
 import { PageHeader } from "@/components/shared/page-header";
 import { EntryList } from "@/components/entries/entry-list";
 import { CardGridSkeleton } from "@/components/shared/loading-skeleton";
@@ -18,6 +19,16 @@ export default function TrackerEntriesPage() {
   const { entries, loading: entriesLoading } = useEntries({
     trackerTypeId: trackerType?.id,
   });
+  const supabase = useMemo(() => createClient(), []);
+  const [userId, setUserId] = useState<string | undefined>();
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUserId(user?.id);
+    });
+  }, [supabase]);
+
+  const isCreator = userId && trackerType?.created_by === userId;
 
   const loading = typeLoading || entriesLoading;
 
@@ -49,9 +60,11 @@ export default function TrackerEntriesPage() {
         description={trackerType.description}
         actions={
           <div className="flex items-center gap-2">
-            <Link href={`/tracker/${slug}/edit`} className={buttonVariants({ variant: "outline" })}>
-              <Pencil className="h-4 w-4 mr-1" /> Edit Tracker
-            </Link>
+            {isCreator && (
+              <Link href={`/tracker/${slug}/edit`} className={buttonVariants({ variant: "outline" })}>
+                <Pencil className="h-4 w-4 mr-1" /> Edit Tracker
+              </Link>
+            )}
             <Link href="/new" className={buttonVariants()}>
               Add Entry
             </Link>

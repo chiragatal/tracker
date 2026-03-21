@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useTrackerTypes } from "@/lib/hooks/use-tracker-types";
 import { useUserTrackers } from "@/lib/hooks/use-user-trackers";
@@ -8,12 +9,21 @@ import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/shared/empty-state";
 import { CardGridSkeleton } from "@/components/shared/loading-skeleton";
 import { buttonVariants } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
 import { Plus } from "lucide-react";
 
 export default function DiscoverPage() {
   const { trackerTypes, loading: typesLoading } = useTrackerTypes();
   const { subscribe, unsubscribe, isSubscribed, loading: userLoading } =
     useUserTrackers();
+  const supabase = useMemo(() => createClient(), []);
+  const [userId, setUserId] = useState<string | undefined>();
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUserId(user?.id);
+    });
+  }, [supabase]);
 
   const loading = typesLoading || userLoading;
 
@@ -56,6 +66,7 @@ export default function DiscoverPage() {
           trackers={trackerTypes}
           isSubscribed={isSubscribed}
           onToggle={handleToggle}
+          currentUserId={userId}
         />
       )}
     </div>
