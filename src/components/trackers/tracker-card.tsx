@@ -13,11 +13,11 @@ interface TrackerCardProps {
 
 export function TrackerCard({ tracker, subscribed, onToggle }: TrackerCardProps) {
   return (
-    <Card>
+    <Card className="card-glow gradient-border">
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="text-2xl shrink-0">{tracker.icon}</span>
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="text-3xl shrink-0">{tracker.icon}</span>
             <div className="min-w-0">
               <CardTitle className="truncate">{tracker.name}</CardTitle>
               <CardDescription className="line-clamp-2">
@@ -28,6 +28,7 @@ export function TrackerCard({ tracker, subscribed, onToggle }: TrackerCardProps)
           <Button
             variant={subscribed ? "secondary" : "outline"}
             size="sm"
+            className={subscribed ? "" : "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-0 hover:from-emerald-500 hover:to-teal-500"}
             onClick={() => onToggle(tracker.id)}
           >
             {subscribed ? (

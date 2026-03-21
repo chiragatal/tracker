@@ -22,9 +22,9 @@ export function Topbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 border-b border-b-transparent bg-card/80 backdrop-blur-sm" style={{ borderImage: "linear-gradient(to right, rgba(16,185,129,0.2), rgba(139,92,246,0.2), transparent) 1" }}>
       <div className="flex items-center justify-between h-14 px-4 md:px-6">
-        <div className="md:hidden text-lg font-bold">Tracker</div>
+        <div className="md:hidden text-lg font-bold text-gradient">Tracker</div>
         <SearchBar className="hidden md:block w-full max-w-md" />
         <DropdownMenu>
           <DropdownMenuTrigger className="rounded-full hover:bg-muted p-0.5 outline-none focus-visible:ring-2 focus-visible:ring-ring">

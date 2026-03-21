@@ -26,7 +26,7 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex flex-col w-64 border-r bg-card h-screen sticky top-0">
       <div className="p-4">
-        <Link href="/dashboard" className="text-xl font-bold tracking-tight">
+        <Link href="/dashboard" className="text-xl font-bold tracking-tight text-gradient">
           Tracker
         </Link>
       </div>
@@ -38,7 +38,7 @@ export function Sidebar() {
             className={cn(
               "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
               pathname === item.href
-                ? "bg-primary/10 text-primary font-medium"
+                ? "bg-gradient-to-r from-primary/15 to-primary/5 text-primary font-medium border-l-2 border-primary"
                 : "text-muted-foreground hover:bg-accent hover:text-foreground"
             )}
           >
@@ -65,7 +65,7 @@ export function Sidebar() {
             className={cn(
               "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
               pathname === `/track/${tracker.slug}`
-                ? "bg-primary/10 text-primary font-medium"
+                ? "bg-gradient-to-r from-primary/15 to-primary/5 text-primary font-medium"
                 : "text-muted-foreground hover:bg-accent hover:text-foreground"
             )}
           >
@@ -77,7 +77,7 @@ export function Sidebar() {
       <div className="p-3">
         <Link
           href="/new"
-          className="flex items-center justify-center gap-2 w-full rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90"
+          className="flex items-center justify-center gap-2 w-full rounded-md bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 text-sm font-medium hover:from-emerald-500 hover:to-teal-500 transition-all"
         >
           <Plus className="h-4 w-4" /> New Entry
         </Link>
