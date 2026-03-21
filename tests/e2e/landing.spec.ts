@@ -30,4 +30,14 @@ test.describe("Public pages", () => {
     await page.waitForURL("**/login");
     expect(page.url()).toContain("/login");
   });
+
+  test("terms page loads", async ({ page }) => {
+    await page.goto("/terms");
+    await expect(page.locator("text=Terms of Service")).toBeVisible();
+  });
+
+  test("privacy page loads", async ({ page }) => {
+    await page.goto("/privacy");
+    await expect(page.locator("text=Privacy Policy")).toBeVisible();
+  });
 });

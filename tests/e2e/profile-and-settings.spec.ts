@@ -78,6 +78,13 @@ test.describe("Profile and Settings", () => {
     }
   });
 
+  test("profile page has delete account section", async ({ page }) => {
+    await page.goto("/profile");
+    await expect(page.locator("text=Delete Account")).toBeVisible();
+    // Don't actually click delete — just verify it exists
+    await expect(page.locator("text=Delete all data")).toBeVisible();
+  });
+
   test("about page is accessible from dropdown menu", async ({ page }) => {
     // Open the user dropdown in the topbar
     const avatarTrigger = page.locator(

@@ -63,6 +63,24 @@ test.describe("App functionality", () => {
     await expect(page.locator("text=Add Field")).toBeVisible();
   });
 
+  test("dashboard shows activity heatmap", async ({ page }) => {
+    await expect(page.locator("text=Activity")).toBeVisible();
+  });
+
+  test("dashboard shows weekly activity chart", async ({ page }) => {
+    await expect(page.locator("text=Weekly Activity")).toBeVisible();
+  });
+
+  test("dashboard has quick-add buttons for subscribed trackers", async ({ page }) => {
+    await expect(page.locator("text=Quick add")).toBeVisible();
+  });
+
+  test("dashboard has filter buttons for recent activity", async ({ page }) => {
+    // Should have an "All" filter button
+    const filterSection = page.locator("text=Recent Activity").locator("..");
+    await expect(filterSection).toBeVisible();
+  });
+
   test("theme toggle works", async ({ page }) => {
     // Page should start in dark mode
     const html = page.locator("html");

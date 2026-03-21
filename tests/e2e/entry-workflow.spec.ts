@@ -212,6 +212,21 @@ test.describe("Entry Workflow", () => {
     });
   });
 
+  test("new entry form shows only dynamic fields from tracker schema", async ({ page }) => {
+    await page.goto("/new");
+    // Select a tracker (Coffee should be subscribed)
+    const trackerSelect = page.locator("button", { hasText: "Select a tracker" });
+    if (await trackerSelect.isVisible()) {
+      await trackerSelect.click();
+      await page.locator("text=Coffee").click();
+      await page.waitForTimeout(500);
+    }
+    // Should show dynamic fields like "Name", "Roaster", "Rating" from the tracker schema
+    // Should NOT show hardcoded "Title" field
+    await expect(page.locator("label", { hasText: "Name" })).toBeVisible();
+    await expect(page.locator("label", { hasText: "Title" })).not.toBeVisible();
+  });
+
   test("entry date field works with custom date", async ({ page }) => {
     await page.goto("/new");
 

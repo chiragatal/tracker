@@ -47,6 +47,11 @@ test.describe("Mobile Responsiveness", () => {
     expect(bodyWidth).toBeLessThanOrEqual(375 + 5); // small tolerance
   });
 
+  test("mobile nav includes Tags link", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.locator("nav").locator("text=Tags")).toBeVisible();
+  });
+
   test("login page works on mobile", async ({ page }) => {
     await page.goto("/login");
     await expect(page.locator("text=Welcome back")).toBeVisible();

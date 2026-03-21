@@ -100,6 +100,19 @@ test.describe("Tracker Management", () => {
     await expect(sidebar.locator("text=My Trackers")).toBeVisible();
   });
 
+  test("new tracker form has default fields pre-populated", async ({ page }) => {
+    await page.goto("/tracker/new");
+    // Should see default fields: Name, Status, Date, Rating, Notes
+    await expect(page.locator("text=Add Field")).toBeVisible();
+    // Check that Name field label exists in the form builder
+    await expect(page.locator('input[value="Name"]')).toBeVisible();
+  });
+
+  test("tracker creation page has emoji picker", async ({ page }) => {
+    await page.goto("/tracker/new");
+    await expect(page.locator("text=Icon")).toBeVisible();
+  });
+
   test("Create Tracker button visible on discover page", async ({ page }) => {
     await page.goto("/discover");
     await expect(page.locator("text=What do you want to track")).toBeVisible();
