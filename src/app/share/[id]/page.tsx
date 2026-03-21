@@ -34,10 +34,10 @@ export default async function SharedEntryPage({
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/50 bg-card/80 backdrop-blur-sm">
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-2">
+        <a href="/" className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-2">
           <img src="/logo.svg" alt="Tracker" className="h-7 w-7" />
           <span className="text-lg font-bold text-gradient">Tracker</span>
-        </div>
+        </a>
       </header>
 
       <main className="max-w-3xl mx-auto px-4 py-8 space-y-6">

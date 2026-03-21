@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { SearchBar } from "@/components/shared/search-bar";
 import {
   DropdownMenu,
@@ -37,10 +38,10 @@ export function Topbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-b-transparent bg-card/80 backdrop-blur-sm" style={{ borderImage: "linear-gradient(to right, rgba(16,185,129,0.2), rgba(139,92,246,0.2), transparent) 1" }}>
       <div className="flex items-center justify-between h-14 px-4 md:px-6">
-        <div className="md:hidden flex items-center gap-2">
+        <Link href="/dashboard" className="md:hidden flex items-center gap-2">
           <img src="/logo.svg" alt="Tracker" className="h-7 w-7" />
           <span className="text-lg font-bold text-gradient">Tracker</span>
-        </div>
+        </Link>
         <SearchBar className="hidden md:block w-full max-w-md" />
         <div className="flex items-center gap-2">
         <ThemeToggle />

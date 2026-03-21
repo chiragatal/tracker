@@ -51,10 +51,10 @@ export default function LandingPage() {
       <div className="relative z-10">
         {/* Nav */}
         <header className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
-          <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <img src="/logo.svg" alt="Tracker" className="h-8 w-8" />
             <span className="text-xl font-bold text-gradient">Tracker</span>
-          </div>
+          </Link>
           <div className="flex items-center gap-3">
             <Link
               href="/login"

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const dynamic = "force-dynamic";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
@@ -7,11 +9,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
       <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl" />
       <div className="w-full max-w-sm relative z-10">
-        <div className="flex flex-col items-center mb-8">
+        <Link href="/" className="flex flex-col items-center mb-8">
           <img src="/logo.svg" alt="Tracker" className="h-14 w-14 mb-3" />
           <h1 className="text-3xl font-bold text-gradient">Tracker</h1>
           <p className="text-sm text-muted-foreground mt-1">Track the things you love</p>
-        </div>
+        </Link>
         {children}
       </div>
     </div>
