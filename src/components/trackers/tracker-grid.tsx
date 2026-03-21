@@ -1,0 +1,25 @@
+"use client";
+
+import { TrackerCard } from "@/components/trackers/tracker-card";
+import type { TrackerType } from "@/types/tracker";
+
+interface TrackerGridProps {
+  trackers: TrackerType[];
+  isSubscribed: (trackerTypeId: string) => boolean;
+  onToggle: (trackerTypeId: string) => void;
+}
+
+export function TrackerGrid({ trackers, isSubscribed, onToggle }: TrackerGridProps) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {trackers.map((tracker) => (
+        <TrackerCard
+          key={tracker.id}
+          tracker={tracker}
+          subscribed={isSubscribed(tracker.id)}
+          onToggle={onToggle}
+        />
+      ))}
+    </div>
+  );
+}

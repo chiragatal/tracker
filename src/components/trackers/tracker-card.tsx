@@ -1,0 +1,54 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import type { TrackerType } from "@/types/tracker";
+import { Check, Plus } from "lucide-react";
+
+interface TrackerCardProps {
+  tracker: TrackerType;
+  subscribed: boolean;
+  onToggle: (trackerTypeId: string) => void;
+}
+
+export function TrackerCard({ tracker, subscribed, onToggle }: TrackerCardProps) {
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-2xl shrink-0">{tracker.icon}</span>
+            <div className="min-w-0">
+              <CardTitle className="truncate">{tracker.name}</CardTitle>
+              <CardDescription className="line-clamp-2">
+                {tracker.description}
+              </CardDescription>
+            </div>
+          </div>
+          <Button
+            variant={subscribed ? "secondary" : "outline"}
+            size="sm"
+            onClick={() => onToggle(tracker.id)}
+          >
+            {subscribed ? (
+              <>
+                <Check className="h-4 w-4 mr-1" />
+                Subscribed
+              </>
+            ) : (
+              <>
+                <Plus className="h-4 w-4 mr-1" />
+                Subscribe
+              </>
+            )}
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <p className="text-xs text-muted-foreground">
+          {tracker.fields.length} field{tracker.fields.length !== 1 ? "s" : ""}
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
