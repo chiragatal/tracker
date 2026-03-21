@@ -7,7 +7,6 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import {
   Card,
   CardContent,
@@ -30,32 +29,13 @@ export default function SignupPage() {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/api/auth/callback?next=/discover`,
-      },
-    });
+    const { error } = await supabase.auth.signUp({ email, password });
     if (error) {
       setError(error.message);
       setLoading(false);
       return;
     }
     router.push("/discover");
-  };
-
-  const handleOAuthSignup = async (provider: "google" | "github") => {
-    setError(null);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: `${window.location.origin}/api/auth/callback?next=/discover`,
-      },
-    });
-    if (error) {
-      setError(error.message);
-    }
   };
 
   return (
@@ -99,27 +79,6 @@ export default function SignupPage() {
             Sign Up
           </Button>
         </form>
-
-        <div className="relative flex items-center gap-4">
-          <Separator className="flex-1" />
-          <span className="text-xs text-muted-foreground uppercase">or</span>
-          <Separator className="flex-1" />
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <Button
-            variant="outline"
-            onClick={() => handleOAuthSignup("google")}
-          >
-            Google
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => handleOAuthSignup("github")}
-          >
-            GitHub
-          </Button>
-        </div>
       </CardContent>
       <CardFooter className="justify-center">
         <p className="text-sm text-muted-foreground">

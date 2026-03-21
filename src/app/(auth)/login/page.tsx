@@ -7,7 +7,6 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import {
   Card,
   CardContent,
@@ -40,19 +39,6 @@ export default function LoginPage() {
       return;
     }
     router.push("/dashboard");
-  };
-
-  const handleOAuthLogin = async (provider: "google" | "github") => {
-    setError(null);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: `${window.location.origin}/api/auth/callback?next=/dashboard`,
-      },
-    });
-    if (error) {
-      setError(error.message);
-    }
   };
 
   return (
@@ -95,27 +81,6 @@ export default function LoginPage() {
             Sign In
           </Button>
         </form>
-
-        <div className="relative flex items-center gap-4">
-          <Separator className="flex-1" />
-          <span className="text-xs text-muted-foreground uppercase">or</span>
-          <Separator className="flex-1" />
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <Button
-            variant="outline"
-            onClick={() => handleOAuthLogin("google")}
-          >
-            Google
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => handleOAuthLogin("github")}
-          >
-            GitHub
-          </Button>
-        </div>
       </CardContent>
       <CardFooter className="justify-center">
         <p className="text-sm text-muted-foreground">
