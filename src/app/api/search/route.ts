@@ -36,7 +36,25 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const entries = rawEntries ?? [];
+  let entries = rawEntries ?? [];
+
+  // Fallback: if pg_trgm returned no results, try ilike substring match
+  if (entries.length === 0) {
+    const pattern = `%${q}%`;
+    let fallbackQuery = supabase
+      .from("entries")
+      .select("*")
+      .eq("user_id", user.id)
+      .or(`title.ilike.${pattern},notes.ilike.${pattern}`)
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (tracker) fallbackQuery = fallbackQuery.eq("tracker_type_id", tracker);
+    if (status) fallbackQuery = fallbackQuery.eq("status", status);
+    if (from) fallbackQuery = fallbackQuery.gte("created_at", from);
+    if (to) fallbackQuery = fallbackQuery.lte("created_at", to);
+    const { data: fallbackData } = await fallbackQuery;
+    entries = fallbackData ?? [];
+  }
 
   // Enrich results with tracker_type and images
   if (entries.length > 0) {
