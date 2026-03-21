@@ -8,6 +8,7 @@ import { FormBuilder } from "@/components/forms/form-builder";
 import { DynamicForm } from "@/components/forms/dynamic-form";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
+import { EmojiPicker } from "@/components/shared/emoji-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -119,13 +120,8 @@ export default function EditTrackerPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="icon">Icon (emoji)</Label>
-              <Input
-                id="icon"
-                value={icon}
-                onChange={(e) => setIcon(e.target.value)}
-                className="w-20"
-              />
+              <Label>Icon</Label>
+              <EmojiPicker value={icon} onChange={setIcon} />
             </div>
 
             <div className="space-y-2">

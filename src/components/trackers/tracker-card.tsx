@@ -1,19 +1,31 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import type { TrackerType } from "@/types/tracker";
-import { Check, Plus, Pencil } from "lucide-react";
+import { Check, Plus, Pencil, Loader2 } from "lucide-react";
 
 interface TrackerCardProps {
   tracker: TrackerType;
   subscribed: boolean;
   isCreator?: boolean;
-  onToggle: (trackerTypeId: string) => void;
+  onToggle: (trackerTypeId: string) => Promise<void> | void;
 }
 
 export function TrackerCard({ tracker, subscribed, isCreator, onToggle }: TrackerCardProps) {
+  const [toggling, setToggling] = useState(false);
+
+  const handleToggle = async () => {
+    setToggling(true);
+    try {
+      await onToggle(tracker.id);
+    } finally {
+      setToggling(false);
+    }
+  };
+
   return (
     <Card className="card-glow gradient-border">
       <CardHeader>
@@ -39,9 +51,12 @@ export function TrackerCard({ tracker, subscribed, isCreator, onToggle }: Tracke
               variant={subscribed ? "secondary" : "outline"}
               size="sm"
               className={subscribed ? "" : "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-0 hover:from-emerald-500 hover:to-teal-500"}
-              onClick={() => onToggle(tracker.id)}
+              disabled={toggling}
+              onClick={handleToggle}
             >
-              {subscribed ? (
+              {toggling ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : subscribed ? (
                 <>
                   <Check className="h-4 w-4 mr-1" />
                   Subscribed
