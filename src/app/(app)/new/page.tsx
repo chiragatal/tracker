@@ -94,7 +94,7 @@ export default function NewEntryPage() {
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
         <div className="space-y-2">
           <Label>Tracker</Label>
-          <Select value={trackerTypeId} onValueChange={setTrackerTypeId}>
+          <Select value={trackerTypeId} onValueChange={(v) => setTrackerTypeId(v ?? "")}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select a tracker..." />
             </SelectTrigger>
@@ -122,7 +122,7 @@ export default function NewEntryPage() {
 
         <div className="space-y-2">
           <Label>Status</Label>
-          <Select value={status} onValueChange={(val) => setStatus(val as EntryStatus)}>
+          <Select value={status} onValueChange={(val) => { if (val) setStatus(val as EntryStatus); }}>
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>

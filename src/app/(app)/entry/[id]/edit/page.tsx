@@ -109,7 +109,7 @@ export default function EditEntryPage() {
 
         <div className="space-y-2">
           <Label>Status</Label>
-          <Select value={status} onValueChange={(val) => setStatus(val as EntryStatus)}>
+          <Select value={status} onValueChange={(val) => { if (val) setStatus(val as EntryStatus); }}>
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>

@@ -2,6 +2,8 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import { MobileNav } from "@/components/layout/mobile-nav";
 
+export const dynamic = "force-dynamic";
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen">

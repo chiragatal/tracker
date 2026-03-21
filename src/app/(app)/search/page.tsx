@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useTrackerTypes } from "@/lib/hooks/use-tracker-types";
 import { PageHeader } from "@/components/shared/page-header";
 import { EntryList } from "@/components/entries/entry-list";
-import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
+import { CardGridSkeleton } from "@/components/shared/loading-skeleton";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -98,7 +98,7 @@ export default function SearchPage() {
         </div>
 
         <div className="flex gap-3">
-          <Select value={tracker} onValueChange={setTracker}>
+          <Select value={tracker} onValueChange={(v) => setTracker(v ?? "")}>
             <SelectTrigger>
               <SelectValue placeholder="All trackers" />
             </SelectTrigger>
@@ -113,7 +113,7 @@ export default function SearchPage() {
             </SelectContent>
           </Select>
 
-          <Select value={status} onValueChange={setStatus}>
+          <Select value={status} onValueChange={(v) => setStatus(v ?? "")}>
             <SelectTrigger>
               <SelectValue placeholder="All statuses" />
             </SelectTrigger>
@@ -126,7 +126,7 @@ export default function SearchPage() {
         </div>
       </form>
 
-      {loading && <LoadingSkeleton />}
+      {loading && <CardGridSkeleton />}
 
       {!loading && searched && (
         <div>

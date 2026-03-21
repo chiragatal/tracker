@@ -7,7 +7,7 @@ import { useTrackerType } from "@/lib/hooks/use-tracker-types";
 import { useEntries } from "@/lib/hooks/use-entries";
 import { PageHeader } from "@/components/shared/page-header";
 import { EntryList } from "@/components/entries/entry-list";
-import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
+import { CardGridSkeleton } from "@/components/shared/loading-skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { buttonVariants } from "@/components/ui/button";
 
@@ -30,7 +30,7 @@ export default function TrackerEntriesPage() {
   );
 
   if (loading) {
-    return <LoadingSkeleton />;
+    return <CardGridSkeleton />;
   }
 
   if (!trackerType) {

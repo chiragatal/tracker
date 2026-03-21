@@ -7,7 +7,7 @@ import { useUserTrackers } from "@/lib/hooks/use-user-trackers";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/shared/empty-state";
 import { EntryList } from "@/components/entries/entry-list";
-import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
+import { CardGridSkeleton } from "@/components/shared/loading-skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 
@@ -37,7 +37,7 @@ export default function DashboardPage() {
   }, [entries]);
 
   if (loading) {
-    return <LoadingSkeleton />;
+    return <CardGridSkeleton />;
   }
 
   if (subscribedTypes.length === 0) {
