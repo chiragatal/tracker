@@ -25,7 +25,7 @@ export function useKeyboardShortcuts() {
         e.preventDefault();
         router.push("/new");
       }
-      if (isMod && e.key === "k") {
+      if (isMod && e.key === "f") {
         e.preventDefault();
         router.push("/search");
         // Focus search input after navigation
