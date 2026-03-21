@@ -26,8 +26,9 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex flex-col w-64 border-r bg-card h-screen sticky top-0">
       <div className="p-4">
-        <Link href="/dashboard" className="text-xl font-bold tracking-tight text-gradient">
-          Tracker
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <img src="/logo.svg" alt="Tracker" className="h-8 w-8" />
+          <span className="text-xl font-bold tracking-tight text-gradient">Tracker</span>
         </Link>
       </div>
       <nav className="flex-1 px-3 space-y-1">
