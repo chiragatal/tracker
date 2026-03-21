@@ -1,0 +1,80 @@
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+
+export async function GET(request: NextRequest) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { searchParams } = request.nextUrl;
+  const q = searchParams.get("q") ?? "";
+  const tracker = searchParams.get("tracker") || null;
+  const status = searchParams.get("status") || null;
+  const from = searchParams.get("from") || null;
+  const to = searchParams.get("to") || null;
+
+  if (!q.trim()) {
+    return NextResponse.json({ entries: [], count: 0 });
+  }
+
+  const { data: rawEntries, error } = await supabase.rpc("search_entries", {
+    search_query: q,
+    p_user_id: user.id,
+    p_tracker_type_id: tracker,
+    p_status: status,
+    p_date_from: from,
+    p_date_to: to,
+  });
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  const entries = rawEntries ?? [];
+
+  // Enrich results with tracker_type and images
+  if (entries.length > 0) {
+    const entryIds = entries.map((e: { id: string }) => e.id);
+    const trackerTypeIds = [
+      ...new Set(entries.map((e: { tracker_type_id: string }) => e.tracker_type_id)),
+    ];
+
+    const [{ data: trackerTypes }, { data: images }] = await Promise.all([
+      supabase
+        .from("tracker_types")
+        .select("*")
+        .in("id", trackerTypeIds as string[]),
+      supabase
+        .from("entry_images")
+        .select("*")
+        .in("entry_id", entryIds as string[])
+        .order("position"),
+    ]);
+
+    const trackerMap = new Map(
+      (trackerTypes ?? []).map((t: { id: string }) => [t.id, t])
+    );
+    const imageMap = new Map<string, typeof images>();
+    for (const img of images ?? []) {
+      const list = imageMap.get(img.entry_id) ?? [];
+      list.push(img);
+      imageMap.set(img.entry_id, list);
+    }
+
+    const enriched = entries.map((e: { id: string; tracker_type_id: string }) => ({
+      ...e,
+      tracker_type: trackerMap.get(e.tracker_type_id) ?? null,
+      images: imageMap.get(e.id) ?? [],
+    }));
+
+    return NextResponse.json({ entries: enriched, count: enriched.length });
+  }
+
+  return NextResponse.json({ entries: [], count: 0 });
+}
