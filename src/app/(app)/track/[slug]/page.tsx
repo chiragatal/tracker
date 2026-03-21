@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Pencil, Download } from "lucide-react";
+import { Pencil, Download, Upload } from "lucide-react";
 import type { Entry } from "@/types/tracker";
 
 type SortOption = "newest" | "oldest" | "title_az" | "title_za";
@@ -110,6 +110,12 @@ export default function TrackerEntriesPage() {
             <Button variant="outline" onClick={exportEntries}>
               <Download className="h-4 w-4 mr-1" /> Export
             </Button>
+            <Link
+              href={`/import?tracker=${trackerType.id}`}
+              className={buttonVariants({ variant: "outline" })}
+            >
+              <Upload className="h-4 w-4 mr-1" /> Import
+            </Link>
             {isCreator && (
               <Link href={`/tracker/${slug}/edit`} className={buttonVariants({ variant: "outline" })}>
                 <Pencil className="h-4 w-4 mr-1" /> Edit Tracker

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useUserTrackers } from "@/lib/hooks/use-user-trackers";
-import { useEntries } from "@/lib/hooks/use-entries";
+import { useEntries, useEntry } from "@/lib/hooks/use-entries";
 import { DynamicForm } from "@/components/forms/dynamic-form";
 import { ImageGallery } from "@/components/shared/image-gallery";
 import { PageHeader } from "@/components/shared/page-header";
@@ -26,11 +26,16 @@ import type { EntryImage, EntryStatus, TrackerType } from "@/types/tracker";
 
 export default function NewEntryPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const preselectedTracker = searchParams.get("tracker");
+  const prefillEntryId = searchParams.get("prefill");
   const { subscribedTypes, loading: trackersLoading } = useUserTrackers();
   const { create } = useEntries();
+  const { entry: prefillEntry, loading: prefillLoading } = useEntry(prefillEntryId ?? "");
 
   const [trackerTypeId, setTrackerTypeId] = useState("");
   const [title, setTitle] = useState("");
+  const [prefilled, setPrefilled] = useState(false);
   const [status, setStatus] = useState<EntryStatus>("done");
   const [entryDate, setEntryDate] = useState(
     () => new Date().toISOString().split("T")[0]
@@ -40,6 +45,29 @@ export default function NewEntryPage() {
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Preselect tracker from query param
+  useEffect(() => {
+    if (preselectedTracker && subscribedTypes.length > 0 && !trackerTypeId) {
+      const match = subscribedTypes.find((t) => t.id === preselectedTracker);
+      if (match) setTrackerTypeId(match.id);
+    }
+  }, [preselectedTracker, subscribedTypes, trackerTypeId]);
+
+  // Prefill from existing entry (duplicate / "Track Again")
+  useEffect(() => {
+    if (prefillEntry && !prefilled) {
+      setPrefilled(true);
+      setTrackerTypeId(prefillEntry.tracker_type_id);
+      setTitle(`Copy of ${prefillEntry.title}`);
+      setStatus(prefillEntry.status);
+      if (prefillEntry.data) {
+        const { entry_date: _, ...rest } = prefillEntry.data as Record<string, unknown>;
+        setData(rest);
+      }
+      setNotes(prefillEntry.notes ?? "");
+    }
+  }, [prefillEntry, prefilled]);
 
   const selectedTracker: TrackerType | undefined = subscribedTypes.find(
     (t) => t.id === trackerTypeId
@@ -70,7 +98,7 @@ export default function NewEntryPage() {
     }
   };
 
-  if (trackersLoading) return <CardGridSkeleton />;
+  if (trackersLoading || (prefillEntryId && prefillLoading)) return <CardGridSkeleton />;
 
   if (subscribedTypes.length === 0) {
     return (

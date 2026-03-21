@@ -37,6 +37,10 @@ npm run lint       # Run ESLint
 - Entries store `entry_date` in their `data` JSONB field (no extra column)
 - `is_public` boolean column on entries enables public share links at `/share/[id]`
 - PWA-installable via `public/manifest.json`
+- In-memory rate limiting on API routes (`src/lib/rate-limit.ts`)
+- Bulk import from JSON at `/import` (same format as export)
+- Quick-add shortcuts on dashboard per subscribed tracker
+- "Track Again" (duplicate entry) via prefill query param on `/new`
 
 ## Conventions
 

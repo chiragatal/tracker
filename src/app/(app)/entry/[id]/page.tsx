@@ -7,7 +7,7 @@ import { useEntry, useEntries } from "@/lib/hooks/use-entries";
 import { EntryDetail } from "@/components/entries/entry-detail";
 import { CardGridSkeleton } from "@/components/shared/loading-skeleton";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Pencil, Trash2, CheckCircle, ArrowLeft, Share2, Copy, Globe } from "lucide-react";
+import { Pencil, Trash2, CheckCircle, ArrowLeft, Share2, Copy, Globe, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 
@@ -111,6 +111,13 @@ export default function EntryDetailPage() {
               Copy Link
             </Button>
           )}
+          <Link
+            href={`/new?tracker=${entry.tracker_type_id}&prefill=${entry.id}`}
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            <RotateCcw className="h-4 w-4 mr-1" />
+            Track Again
+          </Link>
           <Link
             href={`/entry/${entry.id}/edit`}
             className={buttonVariants({ variant: "outline", size: "sm" })}

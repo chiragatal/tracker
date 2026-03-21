@@ -11,7 +11,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, HelpCircle } from "lucide-react";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 
 export function Topbar() {
@@ -61,6 +61,10 @@ export function Topbar() {
             <DropdownMenuItem onClick={() => router.push("/profile")} className="cursor-pointer">
               <User className="h-4 w-4 mr-2" />
               Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push("/about")} className="cursor-pointer">
+              <HelpCircle className="h-4 w-4 mr-2" />
+              About
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive focus:text-destructive">
               <LogOut className="h-4 w-4 mr-2" />

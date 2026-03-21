@@ -72,6 +72,23 @@ export default function DashboardPage() {
         }
       />
 
+      {subscribedTypes.length > 0 && (
+        <section className="mb-6">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-sm text-muted-foreground">Quick add:</span>
+            {subscribedTypes.map((tracker) => (
+              <Link
+                key={tracker.id}
+                href={`/new?tracker=${tracker.id}`}
+                className={buttonVariants({ variant: "outline", size: "sm" })}
+              >
+                {tracker.icon} {tracker.name}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       {monthlyStats.length > 0 && (
         <section className="mb-8">
           <h2 className="text-lg font-semibold mb-4">This Month</h2>
