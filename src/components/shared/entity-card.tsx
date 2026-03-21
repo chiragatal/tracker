@@ -34,7 +34,7 @@ export function EntityCard({
     <Link href={href} className="block group">
       <Card
         className={cn(
-          "overflow-hidden transition-all hover:shadow-md hover:border-primary/20 card-glow gradient-border",
+          "overflow-hidden transition-all hover:shadow-md hover:border-primary/20 card-glow gradient-border animate-slide-up",
           className
         )}
       >

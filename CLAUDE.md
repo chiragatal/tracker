@@ -34,6 +34,9 @@ npm run lint       # Run ESLint
 - `<DynamicForm>` renders any tracker type's form from its field schema
 - RLS enforces data isolation per user
 - Presigned URL uploads direct to Cloudflare R2
+- Entries store `entry_date` in their `data` JSONB field (no extra column)
+- `is_public` boolean column on entries enables public share links at `/share/[id]`
+- PWA-installable via `public/manifest.json`
 
 ## Conventions
 

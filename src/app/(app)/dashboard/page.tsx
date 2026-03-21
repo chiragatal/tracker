@@ -97,8 +97,46 @@ export default function DashboardPage() {
         </section>
       )}
 
+      {(() => {
+        const wantToEntries = entries.filter(e => e.status === "want_to");
+        if (wantToEntries.length === 0) return null;
+        return (
+          <section className="mb-8">
+            <h2 className="text-lg font-semibold mb-4">Want to Do</h2>
+            <Card>
+              <CardContent className="py-3">
+                <ul className="divide-y divide-border">
+                  {wantToEntries.slice(0, 5).map(entry => (
+                    <li key={entry.id}>
+                      <Link
+                        href={`/entry/${entry.id}`}
+                        className="flex items-center gap-3 py-2 hover:bg-muted/50 rounded-md px-2 -mx-2 transition-colors"
+                      >
+                        {entry.tracker_type?.icon && (
+                          <span className="text-lg">{entry.tracker_type.icon}</span>
+                        )}
+                        <span className="text-sm font-medium truncate">{entry.title}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                {wantToEntries.length > 5 && (
+                  <Link
+                    href="/search?status=want_to"
+                    className={buttonVariants({ variant: "link", size: "sm" })}
+                  >
+                    View all ({wantToEntries.length})
+                  </Link>
+                )}
+              </CardContent>
+            </Card>
+          </section>
+        );
+      })()}
+
       <section>
-        <h2 className="text-lg font-semibold mb-4">Recent Activity</h2>
+        <h2 className="text-lg font-semibold mb-1">Recent Activity</h2>
+        <p className="text-sm text-muted-foreground mb-4">Your latest entries across all trackers</p>
         <EntryList entries={entries} />
       </section>
     </div>

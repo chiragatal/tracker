@@ -16,7 +16,7 @@ export function EntryDetail({ entry }: EntryDetailProps) {
   const fields = entry.tracker_type?.fields ?? [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       {/* Header */}
       <div className="space-y-3">
         <div className="flex items-center gap-3">

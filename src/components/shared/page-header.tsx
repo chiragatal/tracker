@@ -6,7 +6,7 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, description, actions }: PageHeaderProps) {
   return (
-    <div className="flex items-start justify-between gap-4 mb-8">
+    <div className="flex items-start justify-between gap-4 mb-8 animate-fade-in">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
         {description && (
