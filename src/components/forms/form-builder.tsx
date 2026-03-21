@@ -161,7 +161,7 @@ export function FormBuilder({ fields, onChange }: FormBuilderProps) {
   return (
     <div className="space-y-4">
       {fields.map((field, index) => (
-        <Card key={field.key} className="p-4">
+        <Card key={index} className="p-4">
           <div className="flex items-start gap-3">
             <div className="flex flex-col gap-1 pt-1">
               <button
