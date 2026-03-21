@@ -16,13 +16,21 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { FieldDefinition } from "@/types/tracker";
 
+const DEFAULT_FIELDS: FieldDefinition[] = [
+  { key: "name", label: "Name", type: "text", required: true },
+  { key: "status", label: "Status", type: "dropdown", required: false, options: ["Done", "Want to"] },
+  { key: "date", label: "Date", type: "date", required: false },
+  { key: "rating", label: "Rating", type: "rating", required: false },
+  { key: "notes", label: "Notes", type: "long_text", required: false },
+];
+
 export default function NewTrackerPage() {
   const router = useRouter();
   const { create } = useTrackerTypes();
   const [name, setName] = useState("");
   const [icon, setIcon] = useState("");
   const [description, setDescription] = useState("");
-  const [fields, setFields] = useState<FieldDefinition[]>([]);
+  const [fields, setFields] = useState<FieldDefinition[]>(DEFAULT_FIELDS);
   const [previewValues, setPreviewValues] = useState<Record<string, unknown>>({});
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

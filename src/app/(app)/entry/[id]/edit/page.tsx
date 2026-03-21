@@ -4,22 +4,10 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { useEntry, useEntries } from "@/lib/hooks/use-entries";
 import { DynamicForm } from "@/components/forms/dynamic-form";
-import { ImageGallery } from "@/components/shared/image-gallery";
 import { PageHeader } from "@/components/shared/page-header";
 import { CardGridSkeleton } from "@/components/shared/loading-skeleton";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
-import type { EntryImage, EntryStatus } from "@/types/tracker";
 
 export default function EditEntryPage() {
   const router = useRouter();
@@ -31,47 +19,58 @@ export default function EditEntryPage() {
   const { entry, loading } = useEntry(id);
   const { update } = useEntries();
 
-  const [title, setTitle] = useState("");
-  const [status, setStatus] = useState<EntryStatus>("done");
-  const [entryDate, setEntryDate] = useState(
-    () => new Date().toISOString().split("T")[0]
-  );
   const [data, setData] = useState<Record<string, unknown>>({});
-  const [images, setImages] = useState<EntryImage[]>([]);
-  const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (entry) {
-      setTitle(entry.title);
-      setStatus(markDone ? "done" : entry.status);
-      setEntryDate(
-        (entry.data?.entry_date as string) ??
-          new Date().toISOString().split("T")[0]
-      );
-      setData(entry.data ?? {});
-      setImages(entry.images ?? []);
-      setNotes(entry.notes ?? "");
+      const entryData: Record<string, unknown> = { ...(entry.data ?? {}) };
+      // Populate derived fields into data if not already present
+      if (!entryData.name && entry.title) {
+        entryData.name = entry.title;
+      }
+      if (!entryData.status && entry.status) {
+        entryData.status = entry.status === "want_to" ? "Want to" : "Done";
+      }
+      if (!entryData.notes && entry.notes) {
+        entryData.notes = entry.notes;
+      }
+      // If markDone, set the status field to "Done"
+      if (markDone) {
+        entryData.status = "Done";
+      }
+      setData(entryData);
     }
   }, [entry, markDone]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
     setError(null);
     setSaving(true);
     try {
-      await update(
-        id,
-        {
-          title: title.trim(),
-          status,
-          data: { ...data, entry_date: entryDate },
-          notes: notes.trim() || null,
-        },
-        images
-      );
+      const fields = entry?.tracker_type?.fields ?? [];
+
+      // Derive title from "name" field or first text field
+      const nameField = fields.find(f => f.key === "name" || f.label.toLowerCase() === "name");
+      const firstTextField = fields.find(f => f.type === "text");
+      const title = (data[nameField?.key ?? ""] as string) || (data[firstTextField?.key ?? ""] as string) || "Untitled";
+
+      // Derive status from "status" field
+      const statusField = fields.find(f => f.key === "status");
+      const statusValue = statusField ? (data[statusField.key] as string) : null;
+      const status = statusValue === "Want to" ? "want_to" : "done";
+
+      // Derive notes from "notes" field or first long_text field
+      const notesField = fields.find(f => f.key === "notes" || f.type === "long_text");
+      const notes = notesField ? (data[notesField.key] as string) || null : null;
+
+      await update(id, {
+        title: title.trim(),
+        status,
+        data,
+        notes,
+      });
       router.push(`/entry/${id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update entry");
@@ -104,61 +103,12 @@ export default function EditEntryPage() {
       )}
 
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="title">Title</Label>
-          <Input
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Status</Label>
-          <Select value={status} onValueChange={(val) => { if (val) setStatus(val as EntryStatus); }}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="done">Done</SelectItem>
-              <SelectItem value="want_to">Want to</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="entry-date">Date</Label>
-          <Input
-            id="entry-date"
-            type="date"
-            value={entryDate}
-            onChange={(e) => setEntryDate(e.target.value)}
-          />
-        </div>
-
+        {/* All fields from tracker schema */}
         {fields.length > 0 && (
-          <div className="space-y-2">
-            <Label>Details</Label>
-            <DynamicForm fields={fields} values={data} onChange={setData} />
-          </div>
+          <DynamicForm fields={fields} values={data} onChange={setData} />
         )}
 
-        <div className="space-y-2">
-          <Label>Images</Label>
-          <ImageGallery images={images} onChange={setImages} />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="notes">Notes</Label>
-          <Textarea
-            id="notes"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-          />
-        </div>
-
-        <Button type="submit" disabled={saving || !title.trim()} className="w-full">
+        <Button type="submit" disabled={saving} className="w-full">
           {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
           {markDone ? "Mark as Done" : "Save Changes"}
         </Button>

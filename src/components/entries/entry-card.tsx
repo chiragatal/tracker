@@ -13,7 +13,10 @@ export function EntryCard({ entry }: EntryCardProps) {
   const firstImage = entry.images?.[0]?.url;
   const trackerIcon = entry.tracker_type?.icon;
   const trackerName = entry.tracker_type?.name;
-  const dateSource = (entry.data?.entry_date as string) ?? entry.created_at;
+  const dateField = entry.tracker_type?.fields?.find(f => f.type === "date");
+  const dateSource = (dateField ? entry.data?.[dateField.key] as string : null)
+    ?? (entry.data?.entry_date as string)
+    ?? entry.created_at;
   const date = new Date(dateSource).toLocaleDateString();
 
   const previewFields = entry.tracker_type?.fields

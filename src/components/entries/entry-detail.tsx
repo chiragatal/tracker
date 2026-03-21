@@ -1,7 +1,6 @@
 "use client";
 
 import { StatusBadge } from "@/components/shared/status-badge";
-import { ImageGallery } from "@/components/shared/image-gallery";
 import { DynamicForm } from "@/components/forms/dynamic-form";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils";
@@ -14,6 +13,12 @@ interface EntryDetailProps {
 export function EntryDetail({ entry }: EntryDetailProps) {
   const trackerIcon = entry.tracker_type?.icon;
   const fields = entry.tracker_type?.fields ?? [];
+
+  // Derive date from data's date field, legacy entry_date, or created_at
+  const dateField = fields.find(f => f.type === "date");
+  const dateSource = (dateField ? entry.data?.[dateField.key] as string : null)
+    ?? (entry.data?.entry_date as string)
+    ?? entry.created_at;
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -31,45 +36,23 @@ export function EntryDetail({ entry }: EntryDetailProps) {
                 </span>
               )}
               <span className="text-sm text-muted-foreground">
-                {formatDate((entry.data?.entry_date as string) ?? entry.created_at)}
+                {formatDate(dateSource)}
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Images */}
-      {entry.images && entry.images.length > 0 && (
-        <Card className="gradient-border">
-          <CardContent className="pt-6">
-            <ImageGallery images={entry.images} readOnly />
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Dynamic fields */}
+      {/* All fields from tracker schema (read-only) */}
       {fields.length > 0 && (
         <Card className="gradient-border">
           <CardContent className="pt-6">
-            <h2 className="text-lg font-semibold mb-4 text-gradient">Details</h2>
             <DynamicForm
               fields={fields}
               values={entry.data ?? {}}
               onChange={() => {}}
               readOnly
             />
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Notes */}
-      {entry.notes && (
-        <Card className="gradient-border">
-          <CardContent className="pt-6">
-            <h2 className="text-lg font-semibold mb-2 text-gradient">Notes</h2>
-            <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
-              {entry.notes}
-            </p>
           </CardContent>
         </Card>
       )}

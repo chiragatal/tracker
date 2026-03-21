@@ -5,14 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useUserTrackers } from "@/lib/hooks/use-user-trackers";
 import { useEntries, useEntry } from "@/lib/hooks/use-entries";
 import { DynamicForm } from "@/components/forms/dynamic-form";
-import { ImageGallery } from "@/components/shared/image-gallery";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/shared/empty-state";
 import { CardGridSkeleton } from "@/components/shared/loading-skeleton";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -22,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import type { EntryImage, EntryStatus, TrackerType } from "@/types/tracker";
+import type { TrackerType } from "@/types/tracker";
 
 export default function NewEntryPage() {
   const router = useRouter();
@@ -34,15 +31,8 @@ export default function NewEntryPage() {
   const { entry: prefillEntry, loading: prefillLoading } = useEntry(prefillEntryId ?? "");
 
   const [trackerTypeId, setTrackerTypeId] = useState("");
-  const [title, setTitle] = useState("");
   const [prefilled, setPrefilled] = useState(false);
-  const [status, setStatus] = useState<EntryStatus>("done");
-  const [entryDate, setEntryDate] = useState(
-    () => new Date().toISOString().split("T")[0]
-  );
   const [data, setData] = useState<Record<string, unknown>>({});
-  const [images, setImages] = useState<EntryImage[]>([]);
-  const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,13 +49,21 @@ export default function NewEntryPage() {
     if (prefillEntry && !prefilled) {
       setPrefilled(true);
       setTrackerTypeId(prefillEntry.tracker_type_id);
-      setTitle(`Copy of ${prefillEntry.title}`);
-      setStatus(prefillEntry.status);
-      if (prefillEntry.data) {
-        const { entry_date: _, ...rest } = prefillEntry.data as Record<string, unknown>;
-        setData(rest);
+      // Populate data from existing entry's data, plus derived fields
+      const prefillData: Record<string, unknown> = { ...(prefillEntry.data ?? {}) };
+      // Ensure name field is populated from title if not already in data
+      if (!prefillData.name && prefillEntry.title) {
+        prefillData.name = `Copy of ${prefillEntry.title}`;
       }
-      setNotes(prefillEntry.notes ?? "");
+      // Ensure status field is populated
+      if (!prefillData.status && prefillEntry.status) {
+        prefillData.status = prefillEntry.status === "want_to" ? "Want to" : "Done";
+      }
+      // Ensure notes field is populated
+      if (!prefillData.notes && prefillEntry.notes) {
+        prefillData.notes = prefillEntry.notes;
+      }
+      setData(prefillData);
     }
   }, [prefillEntry, prefilled]);
 
@@ -75,20 +73,31 @@ export default function NewEntryPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!trackerTypeId || !title.trim()) return;
+    if (!trackerTypeId) return;
     setError(null);
     setSaving(true);
     try {
-      const entry = await create(
-        {
-          tracker_type_id: trackerTypeId,
-          title: title.trim(),
-          status,
-          data: { ...data, entry_date: entryDate },
-          notes: notes.trim() || null,
-        },
-        images.length > 0 ? images : undefined
-      );
+      // Derive title from "name" field or first text field
+      const nameField = selectedTracker?.fields.find(f => f.key === "name" || f.label.toLowerCase() === "name");
+      const firstTextField = selectedTracker?.fields.find(f => f.type === "text");
+      const title = (data[nameField?.key ?? ""] as string) || (data[firstTextField?.key ?? ""] as string) || "Untitled";
+
+      // Derive status from "status" field
+      const statusField = selectedTracker?.fields.find(f => f.key === "status");
+      const statusValue = statusField ? (data[statusField.key] as string) : null;
+      const status = statusValue === "Want to" ? "want_to" : "done";
+
+      // Derive notes from "notes" field or first long_text field
+      const notesField = selectedTracker?.fields.find(f => f.key === "notes" || f.type === "long_text");
+      const notes = notesField ? (data[notesField.key] as string) || null : null;
+
+      const entry = await create({
+        tracker_type_id: trackerTypeId,
+        title,
+        status,
+        data,
+        notes,
+      });
       router.push(`/entry/${entry.id}`);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to create entry";
@@ -126,6 +135,7 @@ export default function NewEntryPage() {
       )}
 
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
+        {/* Tracker selector */}
         <div className="space-y-2">
           <Label>Tracker</Label>
           <Select
@@ -153,67 +163,16 @@ export default function NewEntryPage() {
           </Select>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="title">Title</Label>
-          <Input
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="What are you tracking?"
-            required
+        {/* All fields from tracker schema */}
+        {selectedTracker && (
+          <DynamicForm
+            fields={selectedTracker.fields}
+            values={data}
+            onChange={setData}
           />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Status</Label>
-          <Select value={status} onValueChange={(val) => { if (val) setStatus(val as EntryStatus); }}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="done">Done</SelectItem>
-              <SelectItem value="want_to">Want to</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="entry-date">Date</Label>
-          <Input
-            id="entry-date"
-            type="date"
-            value={entryDate}
-            onChange={(e) => setEntryDate(e.target.value)}
-          />
-        </div>
-
-        {selectedTracker && selectedTracker.fields.length > 0 && (
-          <div className="space-y-2">
-            <Label>Details</Label>
-            <DynamicForm
-              fields={selectedTracker.fields}
-              values={data}
-              onChange={setData}
-            />
-          </div>
         )}
 
-        <div className="space-y-2">
-          <Label>Images</Label>
-          <ImageGallery images={images} onChange={setImages} />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="notes">Notes</Label>
-          <Textarea
-            id="notes"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Any additional notes..."
-          />
-        </div>
-
-        <Button type="submit" disabled={saving || !trackerTypeId || !title.trim()} className="w-full">
+        <Button type="submit" disabled={saving || !trackerTypeId} className="w-full">
           {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
           Create Entry
         </Button>
