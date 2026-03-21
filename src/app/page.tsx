@@ -177,6 +177,15 @@ export default function LandingPage() {
         {/* Footer */}
         <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} Tracker. Built with care.</p>
+          <p className="mt-2">
+            <Link href="/terms" className="underline underline-offset-4 hover:text-foreground">
+              Terms
+            </Link>
+            {" · "}
+            <Link href="/privacy" className="underline underline-offset-4 hover:text-foreground">
+              Privacy
+            </Link>
+          </p>
         </footer>
       </div>
     </div>
