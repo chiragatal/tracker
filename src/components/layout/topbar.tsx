@@ -6,8 +6,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -50,12 +48,9 @@ export function Topbar() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             {email && (
-              <>
-                <DropdownMenuLabel className="font-normal">
-                  <p className="text-sm font-medium">{email}</p>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-              </>
+              <div className="px-2 py-1.5 border-b border-border mb-1">
+                <p className="text-sm font-medium truncate">{email}</p>
+              </div>
             )}
             <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive focus:text-destructive">
               <LogOut className="h-4 w-4 mr-2" />
