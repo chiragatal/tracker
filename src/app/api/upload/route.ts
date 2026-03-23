@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { randomUUID } from "crypto";
@@ -15,31 +14,44 @@ function getS3Client() {
   });
 }
 
-export async function POST(request: NextRequest) {
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll() {},
-      },
+function getUserIdFromCookie(request: NextRequest): string | null {
+  // Read the Supabase auth cookie and decode the JWT to get user ID
+  // Cookie name pattern: sb-<project-ref>-auth-token
+  const authCookie = request.cookies.getAll().find(c => c.name.includes("auth-token"));
+  if (!authCookie) return null;
+
+  try {
+    let tokenValue = authCookie.value;
+
+    // Supabase SSR stores as base64-encoded JSON
+    if (tokenValue.startsWith("base64-")) {
+      tokenValue = Buffer.from(tokenValue.slice(7), "base64").toString("utf-8");
     }
-  );
 
-  // Use getSession instead of getUser to avoid HTTP request with potentially
-  // malformed auth header. getSession decodes the JWT locally.
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    // Parse the session JSON
+    const session = JSON.parse(tokenValue);
+    const accessToken = session?.access_token;
+    if (!accessToken) return null;
 
-  if (!session?.user) {
+    // Decode the JWT payload (middle part) to get user ID
+    const parts = accessToken.split(".");
+    if (parts.length !== 3) return null;
+
+    const payload = JSON.parse(Buffer.from(parts[1], "base64url").toString("utf-8"));
+    return payload.sub ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function POST(request: NextRequest) {
+  const userId = getUserIdFromCookie(request);
+
+  if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (!checkRateLimit(`upload:${session.user.id}`, 20)) {
+  if (!checkRateLimit(`upload:${userId}`, 20)) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
