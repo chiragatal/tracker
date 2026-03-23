@@ -4,12 +4,16 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { randomUUID } from "crypto";
 
 function getS3Client() {
+  const accountId = (process.env.R2_ACCOUNT_ID ?? "").trim();
+  const accessKeyId = (process.env.R2_ACCESS_KEY_ID ?? "").trim();
+  const secretAccessKey = (process.env.R2_SECRET_ACCESS_KEY ?? "").trim();
+
   return new S3Client({
     region: "auto",
-    endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
     credentials: {
-      accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+      accessKeyId,
+      secretAccessKey,
     },
   });
 }
@@ -85,14 +89,14 @@ export async function POST(request: NextRequest) {
 
     await getS3Client().send(
       new PutObjectCommand({
-        Bucket: process.env.R2_BUCKET_NAME!,
+        Bucket: (process.env.R2_BUCKET_NAME ?? "").trim(),
         Key: key,
         Body: buffer,
         ContentType: file.type,
       })
     );
 
-    const publicUrl = `${process.env.R2_PUBLIC_URL}/${key}`;
+    const publicUrl = `${(process.env.R2_PUBLIC_URL ?? "").trim()}/${key}`;
     return NextResponse.json({ publicUrl });
   } catch (err) {
     console.error("R2 upload error:", err);
