@@ -16,7 +16,6 @@ function getS3Client() {
 }
 
 export async function POST(request: NextRequest) {
-  // Create Supabase client from request cookies directly
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -25,22 +24,22 @@ export async function POST(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll() {
-          // Not needed for read-only auth check
-        },
+        setAll() {},
       },
     }
   );
 
+  // Use getSession instead of getUser to avoid HTTP request with potentially
+  // malformed auth header. getSession decodes the JWT locally.
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (!user) {
+  if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (!checkRateLimit(`upload:${user.id}`, 20)) {
+  if (!checkRateLimit(`upload:${session.user.id}`, 20)) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
