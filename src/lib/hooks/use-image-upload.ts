@@ -31,6 +31,31 @@ function resizeImage(file: File, maxSize: number = 1920, quality: number = 0.8):
   });
 }
 
+function uploadViaXHR(formData: FormData): Promise<{ publicUrl: string }> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/upload");
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          resolve(JSON.parse(xhr.responseText));
+        } catch {
+          reject(new Error("Invalid response"));
+        }
+      } else {
+        try {
+          const err = JSON.parse(xhr.responseText);
+          reject(new Error(err.error || "Upload failed"));
+        } catch {
+          reject(new Error(`Upload failed (${xhr.status})`));
+        }
+      }
+    };
+    xhr.onerror = () => reject(new Error("Network error"));
+    xhr.send(formData);
+  });
+}
+
 export function useImageUpload() {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -43,14 +68,10 @@ export function useImageUpload() {
       const resizedFile = new File([resized], file.name.replace(/\.[^.]+$/, ".jpg"), { type: "image/jpeg" });
       const formData = new FormData();
       formData.append("file", resizedFile);
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      if (!res.ok) throw new Error("Upload failed");
-      const { publicUrl } = await res.json();
+      // Use XMLHttpRequest to avoid any global fetch interceptors (e.g. Supabase SDK)
+      const result = await uploadViaXHR(formData);
       setProgress(100);
-      return { publicUrl };
+      return result;
     } finally {
       setUploading(false);
     }
