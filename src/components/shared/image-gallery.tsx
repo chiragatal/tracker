@@ -4,7 +4,7 @@ import { useImageUpload } from "@/lib/hooks/use-image-upload";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, ImagePlus, Loader2, X } from "lucide-react";
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import type { EntryImage } from "@/types/tracker";
 
 interface ImageGalleryProps {
@@ -20,6 +20,7 @@ export function ImageGallery({
 }: ImageGalleryProps) {
   const { upload, uploading } = useImageUpload();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -57,13 +58,15 @@ export function ImageGallery({
         {images.map((img, index) => (
           <div
             key={img.id}
-            className="relative group aspect-video rounded-md overflow-hidden"
+            className="relative group rounded-md overflow-hidden cursor-pointer"
+            onClick={() => setLightboxUrl(img.url)}
           >
             <Image
               src={img.url}
               alt={img.alt_text ?? ""}
-              fill
-              className="object-cover"
+              width={300}
+              height={200}
+              className="w-full h-auto object-contain rounded-md"
             />
             {!readOnly && index > 0 && (
               <button
@@ -120,6 +123,25 @@ export function ImageGallery({
             Add Images
           </Button>
         </>
+      )}
+      {lightboxUrl && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm cursor-pointer"
+          onClick={() => setLightboxUrl(null)}
+        >
+          <button
+            onClick={() => setLightboxUrl(null)}
+            className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 z-10"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <img
+            src={lightboxUrl}
+            alt=""
+            className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
       )}
     </div>
   );
