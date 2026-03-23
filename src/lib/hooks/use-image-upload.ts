@@ -40,8 +40,9 @@ export function useImageUpload() {
     setProgress(0);
     try {
       const resized = await resizeImage(file);
+      const resizedFile = new File([resized], file.name.replace(/\.[^.]+$/, ".jpg"), { type: "image/jpeg" });
       const formData = new FormData();
-      formData.append("file", resized, file.name.replace(/\.[^.]+$/, ".jpg"));
+      formData.append("file", resizedFile);
       const res = await fetch("/api/upload", {
         method: "POST",
         body: formData,
