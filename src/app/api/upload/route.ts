@@ -66,6 +66,21 @@ export async function POST(request: NextRequest) {
   const key = `uploads/${randomUUID()}.${ext}`;
 
   try {
+    // Debug: check env vars for invalid characters
+    const envDebug = {
+      hasAccountId: !!process.env.R2_ACCOUNT_ID,
+      hasAccessKey: !!process.env.R2_ACCESS_KEY_ID,
+      hasSecretKey: !!process.env.R2_SECRET_ACCESS_KEY,
+      hasBucket: !!process.env.R2_BUCKET_NAME,
+      hasPublicUrl: !!process.env.R2_PUBLIC_URL,
+      accessKeyLength: process.env.R2_ACCESS_KEY_ID?.length,
+      secretKeyLength: process.env.R2_SECRET_ACCESS_KEY?.length,
+      accessKeyHasNewline: process.env.R2_ACCESS_KEY_ID?.includes("\n"),
+      secretKeyHasNewline: process.env.R2_SECRET_ACCESS_KEY?.includes("\n"),
+      accountIdHasNewline: process.env.R2_ACCOUNT_ID?.includes("\n"),
+    };
+    console.log("R2 env debug:", JSON.stringify(envDebug));
+
     const buffer = Buffer.from(await file.arrayBuffer());
 
     await getS3Client().send(
@@ -82,6 +97,16 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error("R2 upload error:", err);
     const message = err instanceof Error ? err.message : "Upload failed";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({
+      error: message,
+      debug: {
+        hasAccountId: !!process.env.R2_ACCOUNT_ID,
+        hasAccessKey: !!process.env.R2_ACCESS_KEY_ID,
+        hasSecretKey: !!process.env.R2_SECRET_ACCESS_KEY,
+        hasBucket: !!process.env.R2_BUCKET_NAME,
+        accessKeyLen: process.env.R2_ACCESS_KEY_ID?.trim().length,
+        secretKeyLen: process.env.R2_SECRET_ACCESS_KEY?.trim().length,
+      }
+    }, { status: 500 });
   }
 }
