@@ -67,11 +67,10 @@ function ImageField({ value, onChange, readOnly }: FieldRendererProps) {
     <div className="space-y-2">
       {imageUrl && (
         <div className="relative group w-full max-w-sm overflow-hidden rounded-md">
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={imageUrl}
             alt=""
-            width={400}
-            height={300}
             className="w-full h-auto object-contain rounded-md cursor-pointer"
             onClick={() => setLightboxOpen(true)}
           />
