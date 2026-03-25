@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ImagePlus, Loader2, X as XIcon } from "lucide-react";
 import { useImageUpload } from "@/lib/hooks/use-image-upload";
@@ -50,11 +49,10 @@ function ImageField({ value, onChange, readOnly }: FieldRendererProps) {
           className="relative w-full max-w-sm overflow-hidden rounded-md cursor-pointer hover:opacity-90 transition-opacity"
           onClick={() => setLightboxOpen(true)}
         >
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={imageUrl}
             alt=""
-            width={400}
-            height={300}
             className="w-full h-auto object-contain rounded-md"
           />
         </div>

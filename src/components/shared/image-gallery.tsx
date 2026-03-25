@@ -3,7 +3,8 @@
 import { useImageUpload } from "@/lib/hooks/use-image-upload";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, ImagePlus, Loader2, X } from "lucide-react";
-import Image from "next/image";
+// Using plain <img> instead of next/image for R2-hosted images
+// to avoid optimization issues across devices
 import { useRef, useState } from "react";
 import type { EntryImage } from "@/types/tracker";
 
@@ -61,11 +62,10 @@ export function ImageGallery({
             className="relative group rounded-md overflow-hidden cursor-pointer"
             onClick={() => setLightboxUrl(img.url)}
           >
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={img.url}
               alt={img.alt_text ?? ""}
-              width={300}
-              height={200}
               className="w-full h-auto object-contain rounded-md"
             />
             {!readOnly && index > 0 && (

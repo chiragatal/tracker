@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
+// Using plain <img> for R2-hosted images
 import Link from "next/link";
 
 interface EntityCardProps {
@@ -40,11 +40,11 @@ export function EntityCard({
       >
         {imageUrl && (
           <div className="relative aspect-video overflow-hidden">
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={imageUrl}
               alt={title}
-              fill
-              className="object-cover transition-transform group-hover:scale-105"
+              className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
             />
           </div>
         )}
